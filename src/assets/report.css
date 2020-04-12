@@ -11,3 +11,18 @@ button {
 #export{
     display:none;
 }
+#sitelink{
+    display:none;
+}
+
+.visited{
+    display:none;
+}
+
+.green-row{
+    background: lightgreen;
+}
+
+.red-row{
+    background: lightsalmon;
+}

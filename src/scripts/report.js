@@ -1,26 +1,26 @@
-let events = []
-let site = ""
+let data = {}
 document.addEventListener('DOMContentLoaded', ()=>{
+    document.getElementById("upload").addEventListener('change', uploadJSON)
+	document.getElementById("run").addEventListener('click', run)
+	document.getElementById("download").addEventListener('click', ()=> document.getElementById('export').click())
+
     chrome.runtime.sendMessage({type:"getState"},function(response){
         console.log("first response in report")
         console.log(response)
         if(response.state == "record"){
             toggleButtons(false)
-        }else if(response.events.length>0){
-            events = response.events
-            site = response.site
+        }else if(response.data.events.length >0){
+            data = response.data
             setContent()
         }
     })
-
-	document.getElementById("upload").addEventListener('change', uploadJSON)
-	document.getElementById("run").addEventListener('click', run)
-	document.getElementById("download").addEventListener('click', ()=> document.getElementById('export').click())
 })
 
-function getRow(event){
+function getRow(event, runFinished){
     let value = event.type==="click"?`"x:${event.x} y:${event.y} "` : event.value.replace(/Enter/g, "[ENTER]")
-    return `<tr><td>${event.type}</td><td>${value}</td><td>${event.site?event.site:""}</td></tr>`
+    let className = runFinished ? (event.visited ? "green-row":"red-row"):""
+    let visitedCol = (runFinished? (event.visited? "<td>yes</td>":"<td>no</td>"):"")
+    return `<tr class="${className}"><td>${event.type}</td><td>${value}</td><td>${event.site?event.site:""}</td>${visitedCol}</tr>`
 }
 
 function toggleButtons (start) {
@@ -29,38 +29,36 @@ function toggleButtons (start) {
 }
 
 function run()  {
-    chrome.runtime.sendMessage({type:"run", events:events}, function(response){
-        console.log("must have started running:")
-        console.log(response)
-    })
+    chrome.runtime.sendMessage({type:"startRunning", data:data})
 }
 
 function setContent() {
     toggleButtons(true)
-    var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(events));
+    if(data.runFinished){
+        document.getElementsByClassName("visited")[0].style.display = "table-cell"
+    }
+    var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
     var dlAnchorElem = document.getElementById('export');
     dlAnchorElem.setAttribute("href",     dataStr     );
     dlAnchorElem.setAttribute("download", "result.json");
     dlAnchorElem.style.display = "inline-block"
-	let content = events.map(event=> getRow(event)).join('')
-    document.getElementById("contentbody").innerHTML = content	
+	
+    document.getElementById("contentbody").innerHTML = data.events.map(event=> getRow(event, data.runFinished)).join('')
     
     let link = document.getElementById("sitelink").children[0]
-    link.innerHTML = site
-    link.setAttribute('href', site)
+    link.innerHTML = data.finalSite
+    link.setAttribute('href', data.finalSite)
+    document.getElementById("sitelink").style.display = "block" 
 }
 
 function uploadJSON() {
     console.log('running uploadjson')
 
 	var file = document.getElementById('upload').files[0]    
-	console.log(file)
     var reader = new FileReader();
     reader.onload = (function(theFile) {
         return function(e) {
-            content = JSON.parse(e.target.result)
-            events = content.events
-            site = content.site
+            data = JSON.parse(e.target.result)
             setContent()
         };
       })(file);

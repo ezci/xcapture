@@ -14,7 +14,7 @@ function getRow(event){
     let value = event.type==="click"?`"x:${event.x} y:${event.y} "` : event.value.replace(/Enter/g, "[ENTER]")
     return `<tr><td>${event.site?event.site:""}</td><td>${event.type}</td><td>${value}</td></tr>`
 }
-
+/*
 function getContent(events){
     toggleButtons(true)
     var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(events));
@@ -24,6 +24,7 @@ function getContent(events){
 
     return events.map(event=> getRow(event)).join('')
 }
+*/
 const initPopupScript = () => {
 
     document.getElementById("import").addEventListener('click', openReport)
