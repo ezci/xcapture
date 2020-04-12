@@ -1,0 +1,13 @@
+
+button {
+    width: 150px;
+    padding: 0!important;
+}
+
+#pcontent, #cbuttons{
+    display:none;
+}
+
+#export{
+    display:none;
+}

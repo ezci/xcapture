@@ -1,0 +1,38 @@
+<!doctype html>
+<html style="min-height:auto" >
+    <head>
+        <title>xCapture</title>
+        <script src="/scripts/popup.js"></script>
+        <link rel="stylesheet" type="text/css" href="/assets/popup.css">
+        <link rel="stylesheet" type="text/css" href="/assets/milligram.min.css">
+    </head>
+    <body>
+       <div id="pcontent">
+           <h4>Events Captured
+                <a class="btn" id="export">download</a>
+           </h3>
+           <table>
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody id="contentbody"></tbody>
+            </table>
+        </div>
+        <div id="cbuttons">
+            <button id="download">download</button>            
+            <button id="run">run</button>
+        </div>
+        <div id="buttons">
+            <div id="state">
+                <img src="/assets/record.png" />
+                <p>started recording</p>
+            </div>
+            <button id="start">start recording</button>
+            <button id="finish">stop</button>
+            <button id="import">import</button>
+        </div>
+    </body>
+</html>

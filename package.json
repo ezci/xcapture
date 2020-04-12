@@ -1,0 +1,37 @@
+{
+  "name": "xcapture",
+  "version": "1.0.0",
+  "description": "chrome extension to capture mouse and keyboard events",
+  "main": "index.js",
+  "scripts": {
+    "start": "gulp",
+    "package": "gulp package"
+  },
+  "keywords": [
+    "chrome",
+    "extension",
+    "web",
+    "store",
+    "apps",
+    "Google",
+    "video",
+    "capture",
+    "mouse",
+    "keyboard"
+  ],
+  "author": "emrhzc",
+  "license": "MIT",
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-autoprefixer": "^7.0.1",
+    "gulp-clean": "^0.4.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-connect": "^5.7.0",
+    "gulp-sass": "^4.0.2",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-zip": "^5.0.1",
+    "main-bower-files": "^2.13.3",
+    "run-sequence": "^2.2.1",
+    "vinyl-source-stream": "^2.0.0"
+  }
+}
