@@ -8,6 +8,7 @@ let events = []
 let currentEvent = -1
 let state = 'inactive'
 let currentSite = ''
+let currentTab = -1
 siteChanged = true
 
 chrome.runtime.onMessage.addListener(function(request, sender, respond){
@@ -16,10 +17,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, respond){
 	switch(request.type) {
 		case "checkin":
 			if(state === "record"){
-				recordPage(request, respond)
+				recordPage(request, respond, sender.tab.id)
 			}else if(state === "run"){
-				run(respond)
-
+				run(respond, sender.tab.id)
 			}else{
 				respond({type:"inactive"})
 			}
@@ -50,13 +50,21 @@ chrome.runtime.onMessage.addListener(function(request, sender, respond){
 	console.log(events)
 })
 
+function stopOldTab(sender){
+	if(currentTab!=-1){
+		chrome.tabs.sendMessage(currentTab, { type:"stop" }); //ask page to stop listening
+	}
+	currentTab = sender
+}
+
 function startRunning(request, respond){
 	currentEvent = 0
 	chrome.tabs.create({url: request.events[0].site})
 	respond({ started: true });
 	console.log("record command sent")
 }
-function run(respond){
+function run(respond, sender){
+	if(sender !== currentTab) stopOldTab(sender.tab.id)
 	respond({ record: true, events: events.slice(currentEvent) });
 	console.log("record command sent")
 }
@@ -83,7 +91,8 @@ function saveKey(request) {
 	}
 }
 
-function recordPage(request, respond) {
+function recordPage(request, respond, sender) {
+	stopOldTab(sender)
 	console.log("page recording: "+currentSite)
 	currentSite = request.site;
 	siteChanged = true;
@@ -95,9 +104,10 @@ function stopRecording(respond) {
 	if (siteChanged && events.length >0) {
 		events[events.length-1].site = currentSite
 	}
+	chrome.tabs.sendMessage(currentTab, { type:"stop" });
 	chrome.browserAction.setIcon({ path: "assets/play.png" });
 	chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-		chrome.tabs.sendMessage(tabs[0].id, { start: false }); //ask page to stop listening
+		chrome.tabs.sendMessage(tabs[0].id, { type:"stop" }); //ask page to stop listening
 	});
 	state = 'inactive';
 	console.log("sending data upon stop request")
@@ -111,7 +121,7 @@ function startRecording(respond) {
 	
 	chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
 		console.log(tabs);
-		chrome.tabs.sendMessage(tabs[0].id, { record: true }, function (response) {
+		chrome.tabs.sendMessage(tabs[0].id, { type:"record" }, function (response) {
 			site = response;
 			console.log("response from page.start:"+response)
 			events = []

@@ -1,10 +1,29 @@
 chrome.runtime.onMessage.addListener( (request, _, respond) => {
-	if(request.record){
+	if(request.type==="record"){
 		reloadEventListeners()
 		respond(window.location.href)
-	}else{
+	}else if(request.type==="stop"){
 		removeEventListeners()
 	}
+	console.log("request:")
+	console.log(request)
+})
+
+let cover = document.createElement('div')
+cover.style = "opacity:0.8;position:fixed;width:100%;height:100%;top:0px;left:0px;z-index:1000;background-color:#cccccc75;"
+let recordingSpan = document.createElement('span')
+recordingSpan.innerHTML = "recording"
+recordingSpan.style="color:red;font-size:20;float:right;"
+
+cover.addEventListener("click", function(event){
+	document.body.removeChild(cover)
+	chrome.runtime.sendMessage({type: "click",x:event.clientX, y:event.clientY})
+	document.elementFromPoint(event.clientX, event.clientY).click()
+	document.elementFromPoint(event.clientX, event.clientY).focus()
+	setTimeout(()=>{
+        console.log(event.clientX + " "+event.clientY)
+		document.body.appendChild(cover)
+    }, 200)
 })
 
 
@@ -46,55 +65,21 @@ function sendKey(event){
 	chrome.runtime.sendMessage({type: "key", key:event.key})
 	console.log('sent key')
 }
-let stopped = false
-function sendAClick(event){
-	console.log('captured : '+event.target.tagName)	
-	if(stopped){
-		console.log('already stopped')
-		stopped = false
-		return true
-	}
-	stopped = true
-	event.preventDefault()
-	event.stopPropagation()
-	chrome.runtime.sendMessage({type: "click",x:event.clientX, y:event.clientY})
-	console.log('sent A click')
-	console.log(event)
-	setTimeout(()=>(event.target.click ?event.target.click() :document.elementFromPoint(event.clientX, event.clientY).click()), 200)
-	return false	
-}
 
-function sendClick(event){
-	console.log(event.target.tagName)
-	chrome.runtime.sendMessage({type: "click",x:event.clientX, y:event.clientY})
-	console.log('sent click')
-}
 function reloadEventListeners(){
 	removeEventListeners()
 	addEventListeners()
 }
 function removeEventListeners(){
+	console.log("removing listeners")
 	document.body.removeEventListener('keypress', sendKey)
-	document.body.removeEventListener('click', sendClick)
+	if(document.body.contains(cover))document.body.removeChild(cover)
 }
 function addEventListeners(){
 	document.body.addEventListener('keypress', sendKey)
-	document.body.addEventListener('click', sendClick)
-	let as = document.querySelectorAll("a")
-	
-	for(var i=0;i<as.length;i++){
-		as[i].addEventListener('click', sendClick)
-	}
-	
-	var observer = new MutationObserver(function(mutationsList) {
-		for(var mutation of mutationsList) {
-			if (mutation.type == 'childList') {
-				console.log("detected change")
-				reloadEventListeners()
-			}
-		}
-	})
-	observer.observe(document.body, { attributes: true, childList: true })
+	document.body.appendChild(cover)
+	cover.appendChild(recordingSpan)
+	//recordingSpan.appendChild(stopButton)
 
 
 	console.log('xcapture event listeners added')
