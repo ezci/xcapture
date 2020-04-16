@@ -26,62 +26,115 @@ chrome.runtime.sendMessage({type:"checkin", site:window.location.href}, function
 })
 
 
-cover.addEventListener("click", function(event){
+cover.addEventListener("click", sendClick)
+
+
+
+let lastElement = undefined
+function executeEvent(events, index){
+	if(index >= events.length){
+		console.log("asking for send report")
+		chrome.runtime.sendMessage({type:"reportExecutions", visiteds:events.map(event=> event.visited)})
+		return
+	}
+	let event = events[index]
+
+	if(event.type==="click"){
+		event.visited = window.location.href
+		if(event.waitFor && event.site !== window.location.href){
+			console.log('gonna wait for:  '+event.site)
+			setTimeout(()=> { executeEvent(events, index)}, 500)
+			return
+		}else{
+			console.log("nothing to wait : "+event.waitFor)
+			console.log(window.location.href + " vs "+event.site)
+		}
+	
+		generateClick(event)
+
+	}else if(event.type==="text"){
+		generateKeyEvent(event)
+	}else if(event.type == "scroll"){
+		window.scrollTo(event.x, event.y)
+	}
+	setTimeout(()=> { executeEvent(events, index+1)}, 500)
+}
+
+function generateKeyEvent(event) {
+	console.log("gonna enter text")
+	if (lastElement) {
+		console.log("appending to lastElement:" + event.value)
+		lastElement.value = event.value
+	}
+	else if (document.activeElement) {
+		if (document.activeElement.value != null) {
+			console.log("appending:" + event.value)
+			document.activeElement.value += event.value
+		}
+		else {
+			console.log("setting:" + event.value)
+			document.activeElement.value = event.value
+		}
+	}
+	else {
+		console.log("could not set:" + event.value)
+	}
+}
+
+function generateClick(event) {
+	console.log("gonna click " + event.x + ":" + event.y)
+	lastElement = document.elementFromPoint(event.x, event.y)
+	console.log(lastElement)
+	if (lastElement.childElementCount > 0) { //ugly fix
+		console.log('clicking childElement')
+		lastElement.children[0].click()
+	}
+	else {
+		console.log('clicking Element')
+		lastElement.click()
+	}
+}
+
+function getElementDescription(element, event){
+	return {tag:element.tagName, 
+		class:element.className, 
+		id:element.id,
+		text:element.innerText,
+		position:{
+			x:event.pageX, 
+			y:event.clientY, 
+			scrollY:window.scrollY, 
+			scrollX:window.scrollX
+		}
+	}
+}
+
+function sendKey(event){
+	let message = {type: "text", value:event.key}
+	message.element = getElementDescription(event.target, event)
+	chrome.runtime.sendMessage(message)
+	console.log('sent key')
+}
+
+function sendClick(event){
 	event.preventDefault()
 	event.stopPropagation()
 	document.body.removeChild(cover)
 
-	chrome.runtime.sendMessage({type: "click",x:event.pageX, y:event.pageY})
-	console.log(document.elementFromPoint(event.clientX, event.clientY))
 	let element = document.elementFromPoint(event.clientX, event.clientY)
 	while(!element.click){
 		element = element.parentElement
 	}
-	element.click()
-	element.focus()
-	setTimeout(()=>{
-		document.body.appendChild(cover)
-	}, 200)
-	return false
-})
-let lastElement = undefined
-function executeEvent(events, index){
-	if(index >= events.length){
-		return
-	}
-	let event = events[index]
-	console.log("event to run:")
-	console.log(event)
-	if(event.type==="click"){
-		console.log("gonna click "+event.x + ":"+event.y)
-		lastElement = document.elementFromPoint(event.x, event.y)
-		console.log(lastElement)
-		document.elementFromPoint(event.x, event.y).click()
 
-	}else if(event.type==="text"){
-		console.log("gonna enter text")
-		if(lastElement){
-			console.log("appending to lastElement:"+event.value)
-			lastElement.value = event.value
-		}else if(document.activeElement){
-			if(document.activeElement.value != null){
-				console.log("appending:"+event.value)
-				document.activeElement.value += event.value
-			}else{
-				console.log("setting:"+event.value)
-				document.activeElement.value = event.value
-			}
-		}else {
-			console.log("could not set:"+event.value)
-		}
-	}
-	setTimeout(()=> {
-		executeEvent(events, index+1)
-	}, 500)
-}
-function sendKey(event){
-	chrome.runtime.sendMessage({type: "key", key:event.key})
-	console.log('sent key')
+	chrome.runtime.sendMessage({	
+		site:window.location.href,
+		type: "click", 
+		element:getElementDescription(element, event)
+	})
+	element.click()
+	element.focus() //necessary?
+		document.body.appendChild(cover)
+	return false
 }
 
 function reloadEventListeners(){

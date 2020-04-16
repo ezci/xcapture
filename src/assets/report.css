@@ -7,7 +7,9 @@ button {
 #pcontent, #cbuttons{
     display:none;
 }
-
+#cbuttons{
+    float:right;
+}
 #export{
     display:none;
 }
@@ -25,4 +27,17 @@ button {
 
 .red-row{
     background: lightsalmon;
+}
+
+#importLabel {
+    text-align: center;
+}
+
+h4{
+    display:inline-block;
+}
+
+.eventSite{
+    max-width: 300px;
+    overflow-wrap: break-word;
 }

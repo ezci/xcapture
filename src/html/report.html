@@ -10,9 +10,7 @@
     </body>
     <body>
         <div id="pcontent">
-            <h4>Events Captured
-                    <a class="btn" id="export">download</a>
-            </h4>
+            <h4>Events Captured</h4>
             <div id="cbuttons">
                 <button id="download">download</button>            
                 <button id="run">run</button>
@@ -20,9 +18,10 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Type</th>
-                        <th>Value</th>
                         <th>Site</th>
+                        <th>Event</th>
+                        <th>Element</th>
+                        <th>Reloaded</th>
                         <th class="visited">Visited</th>
                     </tr>
                 </thead>
@@ -32,11 +31,10 @@
         <div id="sitelink">
             final site: <a ></a>
         </div>
-        <div id="buttons">
-            <label id="importLabel" class="import btn">
-                Import JSON<input type="file" id="upload" hidden>
-            </label>
-        </div>
+        <a class="btn" id="export">download</a>
+        <label id="importLabel" class="import btn">
+            Upload JSON<input type="file" id="upload" hidden>
+        </label>        
     </body>
 </html>
 
