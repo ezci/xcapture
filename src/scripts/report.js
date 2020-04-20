@@ -38,17 +38,14 @@ function getRow(event, runFinished){
             eventName = "enter text:" + event.value
         }
     } 
-    let element = event.type==="scroll" ? "window" : JSON.stringify(event.element)
-    let className = runFinished && event.site ? (event.visited ? "green-row":"red-row"):""
-    let visitedCol = (runFinished? (event.visited? "<td>yes</td>":"<td>no</td>"):"")
+    let element = event.type==="scroll" ? `x:${event.x} y:${event.y}` : JSON.stringify(event.element)
     let reloadedCol = (event.reloaded? "yes":"no")
 
-    return `<tr class="${className}">
+    return `<tr>
                 <td class="eventSite">${event.site?event.site:""}</td>
                 <td>${eventName}</td>
                 <td>${element}</td>
                 <td>${reloadedCol}</td>
-                ${visitedCol}
             </tr>`
 }
 
@@ -67,7 +64,6 @@ function setContent() {
     dlAnchorElem.setAttribute("download", "result.json");
 	runFinished = (data.finalSiteVisited !== null)
     if(runFinished){
-        document.getElementsByClassName("visited")[0].style.display = "table-cell"
     }    getById("contentbody").innerHTML = data.events.map(event=> getRow(event, runFinished)).join('')
     
     let link = getById("sitelink").children[0]

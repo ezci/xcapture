@@ -26,8 +26,6 @@ function processPageRequest(request, respond, sender) {
 		case "checkin":
 			checkinPage(request, respond, sender)
 			break
-		case "reportExecutions":
-			reportExecutions(request)
 		case "getState":
 			respond({ state: state, data: data })
 			break
@@ -78,16 +76,6 @@ function processPopupRequest(request, respond){
 	}
 }
 
-function reportExecutions(request){
-
-	console.log("reporting: ")
-	console.log(request)
-	for(var i=request.visiteds.length;i>0;i--){
-		data.events[currentEvent-i].visited = request.visiteds[i-1]
-	}
-	console.log("reported count: "+request.visiteds.length)
-}
-
 function updateCurrentTab(tabId){
 
 	if(currentTab!=-1 && tabId !== currentTab ){
@@ -114,6 +102,7 @@ function sendEventsToRun(request, respond){
 		respond({finished: true})
 		return
 	}
+
 	nextPageEvent = currentEvent+1
 	while(nextPageEvent < data.events.length && !data.events[nextPageEvent].reloaded){
 		nextPageEvent++
@@ -141,8 +130,9 @@ function saveClick(request) {
 		waitFor = true
 		currentSite = request.site
 	}
-	if(request.scrollX > 0 || request.scrollY > 0){
-		saveEvent({type:'scroll', x:request.scrollX, y:request.scrollY, waitFor:waitFor})
+	console.log('click event:', request)
+	if(request.element.position.scrollX > 0 || request.element.position.scrollY > 0){
+		saveEvent({type:'scroll', x:request.element.position.scrollX, y:request.element.position.scrollY, waitFor:waitFor})
 		saveEvent(request);
 	}else{
 		request.waitFor = waitFor
@@ -201,5 +191,5 @@ function initData(_state, _currenTab){
 	state = _state
 	reloaded = true
 	currentTab = _currenTab
-	return {events:[], finalSite:'', finalSiteVisited:null}
+	return {events:[], finalSite:''}
 }

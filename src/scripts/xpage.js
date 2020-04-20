@@ -31,16 +31,16 @@ cover.addEventListener("click", sendClick)
 
 
 let lastElement = undefined
+let waitCount = 0
+let waiting = false
 function executeEvent(events, index){
 	if(index >= events.length){
-		console.log("asking for send report")
-		chrome.runtime.sendMessage({type:"reportExecutions", visiteds:events.map(event=> event.visited)})
+		console.log("ending execution")
 		return
 	}
 	let event = events[index]
 
 	if(event.type==="click"){
-		event.visited = window.location.href
 		if(event.waitFor && event.site !== window.location.href){
 			console.log('gonna wait for:  '+event.site)
 			setTimeout(()=> { executeEvent(events, index)}, 500)
@@ -82,8 +82,8 @@ function generateKeyEvent(event) {
 }
 
 function generateClick(event) {
-	console.log("gonna click " + event.x + ":" + event.y)
-	lastElement = document.elementFromPoint(event.x, event.y)
+	console.log("gonna click " + event.element.position.x + ":" + event.element.position.y)
+	lastElement = document.elementFromPoint(event.element.position.x, event.element.position.y)
 	console.log(lastElement)
 	if (lastElement.childElementCount > 0) { //ugly fix
 		console.log('clicking childElement')

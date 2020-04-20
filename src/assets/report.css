@@ -17,18 +17,6 @@ button {
     display:none;
 }
 
-.visited{
-    display:none;
-}
-
-.green-row{
-    background: lightgreen;
-}
-
-.red-row{
-    background: lightsalmon;
-}
-
 #importLabel {
     text-align: center;
 }
