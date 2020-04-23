@@ -1,12 +1,15 @@
 
 var gulp = require('gulp'),
     clean = require('gulp-clean'),
-    zip = require('gulp-zip')
+    zip = require('gulp-zip'),
+    cleanCSS = require('gulp-clean-css');
+
 
 var path = {
         html: "src/html/**",
         scripts: "src/scripts/**",
 		assets: "src/assets/**",
+		css: "src/css/**",
         dist: "dist",
         package: 'package',
         manifest: 'src/manifest.json'
@@ -33,6 +36,14 @@ gulp.task('assets', () => {
         .pipe(gulp.dest(path.dist))
 })
 
+gulp.task('css', () => {
+    return gulp.src(path.css, {
+        base: 'src'
+    })
+        .pipe(cleanCSS({compatibility: 'ie8'}))
+        .pipe(gulp.dest(path.dist))
+})
+
 gulp.task('html', () => {
     return gulp.src(path.html, {
         base: 'src'
@@ -53,6 +64,6 @@ gulp.task('clean', gulp.series(()=> gulp.src([path.dist, path.package], {
     allowEmpty : true
     }).pipe(clean()))
 )
-gulp.task('load', gulp.series('manifest', 'js', 'assets', 'html'))
+gulp.task('load', gulp.series('manifest', 'js', 'css', 'assets', 'html'))
 gulp.task('default', gulp.series('clean', 'load'))
 gulp.task('package', gulp.series('clean', 'load', 'zip'))

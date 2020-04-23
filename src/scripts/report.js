@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
 	getById("run").addEventListener('click', ()=>{
         chrome.runtime.sendMessage({type:"startRunning", data:data})
     })
-	getById("download").addEventListener('click', ()=> getById('export').click())
     checkinPage()
 })
 
@@ -24,7 +23,7 @@ function checkinPage() {
         })
     }
     catch (error) {
-        console.log(error)
+        console.error(error)
     }
 }
 
@@ -58,10 +57,7 @@ function toggleButtons (start) {
 function setContent() {
 
     toggleButtons(true)
-    var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
-    var dlAnchorElem = getById('export');
-    dlAnchorElem.setAttribute("href",     dataStr     );
-    dlAnchorElem.setAttribute("download", "result.json");
+    setDownloads()
 	runFinished = (data.finalSiteVisited !== null)
     if(runFinished){
     }    getById("contentbody").innerHTML = data.events.map(event=> getRow(event, runFinished)).join('')
@@ -70,6 +66,20 @@ function setContent() {
     link.innerHTML = data.finalSite
     link.setAttribute('href', data.finalSite)
     getById("sitelink").style.display = "block" 
+}
+
+
+function setDownloads() {
+    var jsonData = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data))
+    var jsonLink = getById('export')
+    jsonLink.setAttribute("href", jsonData)
+    jsonLink.setAttribute("download", "captured.json")
+
+    var htmlData = `data:text/html;charset=utf-8,<html><script>localStorage.setItem('captureData','${JSON.stringify(data)}');setTimeout(()=>{window.close()}, 1000);</script></html>`
+    var htmlLink = getById('exportHTML')
+    htmlLink.setAttribute("href", htmlData)
+    htmlLink.setAttribute("download", "captured.html")
+
 }
 
 function uploadJSON() {

@@ -3,8 +3,8 @@
     <head>
         <title>xCapture</title>
         <script src="/scripts/report.js"></script>
-        <link rel="stylesheet" type="text/css" href="/assets/report.css">
-        <link rel="stylesheet" type="text/css" href="/assets/milligram.min.css">
+        <link rel="stylesheet" type="text/css" href="/css/report.css">
+        <link rel="stylesheet" type="text/css" href="/css/milligram.min.css">
     </head>
     <body>
     </body>
@@ -12,7 +12,13 @@
         <div id="pcontent">
             <h4>Events Captured</h4>
             <div id="cbuttons">
-                <button id="download">download</button>            
+                <div class="dropdown">
+                    <label class="button" for="ct">Download</label>
+                    <ul>
+                      <li><a id="export" href="#">JSON</a></li>
+                      <li><a href="#" id="exportHTML">HTML</a></li>
+                    </ul>
+                  </div>    
                 <button id="run">run</button>
             </div>
             <table>
@@ -30,7 +36,6 @@
         <div id="sitelink">
             final site: <a ></a>
         </div>
-        <a class="btn" id="export">download</a>
         <label id="importLabel" class="import btn">
             Upload JSON<input type="file" id="upload" hidden>
         </label>        

@@ -1,0 +1,104 @@
+
+button {
+    width: 150px;
+    padding: 0!important;
+}
+
+#pcontent, #cbuttons{
+    display:none;
+}
+#cbuttons{
+    float:right;
+}
+#sitelink{
+    display:none;
+}
+
+#importLabel {
+    text-align: center;
+}
+
+h4{
+    display:inline-block;
+}
+
+.eventSite{
+    max-width: 300px;
+    overflow-wrap: break-word;
+}
+button#run:after {
+    content: "";
+    transform: rotate(45deg);
+    -webkit-transform: rotate(315deg);
+    border: 1px solid white;
+    border-width: 0 2px 2px 0;
+    display: inline-block;
+    padding: 3px;
+    margin-left: 10px;
+}
+.dropdown {
+position: relative;
+display: inline-block;
+}
+
+.dropdown label:after {
+content: "";
+transform: rotate(45deg);
+-webkit-transform: rotate(45deg);
+border: 1px solid white;
+border-width: 0 2px 2px 0;
+display: inline-block;
+padding: 3px;
+margin-left: 10px;
+}
+
+.dropdown:hover label:after {
+content:" ";
+transform: rotate(-135deg);
+-webkit-transform: rotate(-135deg);
+}
+
+.dropdown ul {
+position: absolute;
+list-style: none;
+text-align: left;
+width: 100%;
+min-width: 14rem;
+z-index: 1;
+display: none;
+background: white;
+border: 0.1rem solid rgba(96, 108, 118, 0.25);
+border-top: none;
+border-bottom-right-radius: 0.3rem;
+border-bottom-left-radius: 0.3rem;
+}
+
+nav.bar .dropdown ul {
+margin-top: 1.4rem;
+margin-left: -1.5rem;
+}
+
+nav.bar .dropdown label {
+padding: 0 1rem;
+}
+
+.dropdown ul li {
+cursor: pointer;
+margin: 0;
+}
+
+.dropdown ul li:hover {
+background: #f9f9f9;
+}
+
+.dropdown:hover ul {
+display: block;
+}
+
+
+.dropdown ul li a {
+    padding: 1rem 1.5rem;
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+}
