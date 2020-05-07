@@ -80,6 +80,31 @@ function setDownloads() {
     htmlLink.setAttribute("href", htmlData)
     htmlLink.setAttribute("download", "captured.html")
 
+    var lastElement = null;
+    var robotData = `data:text/plain;charset=utf-8,*** Settings ***
+Documentation                                       xCaptured Test
+Library                                             SeleniumLibrary
+    
+*** Variables ***
+${data.events.map((event, idx) => '${"link'+idx+'"}    '+event.site).join('\n')}
+    
+*** Test Cases ***
+User can open page 
+\tOpen Browser\t${data.events[0].site}\tbrowser=chrome
+${data.events.map((event, idx) => {
+    if(event.type==='click'){
+        lastElement = 'xpath=//' + event.element.path
+        return '\tClick Element\t' + lastElement
+    }else if(event.type ==='text'){
+        return '\tInput Text\t' + lastElement + '\t' + event.value
+    }
+} ).join('\n')}
+`
+
+    var robotLink = getById('exportRobot')
+    robotLink.setAttribute("href", robotData)
+    robotLink.setAttribute("download", "captured.robot")
+
 }
 
 function uploadJSON() {
